@@ -2,10 +2,6 @@
 **Natural Language Understanding (Spring 2026) — IIT Jodhpur**  
 Author: **Yashraj Chaturvedi**
 
----
-
-## Overview
-
 This repository contains solutions for two assignment problems:
 
 1. **Word Embeddings on IIT Jodhpur Corpus** (CBOW + Skip-gram)
@@ -15,7 +11,7 @@ This repository contains solutions for two assignment problems:
 
 ## Project Structure
 
-```
+```text
 NLU-Assignmnet-2/
 ├── word_embeddings/
 │   ├── data/
@@ -50,166 +46,123 @@ NLU-Assignmnet-2/
 │       ├── blstm.txt
 │       └── attention.txt
 └── requirements.txt
-```
 
----
+##Setup
 
-## Setup
-
-### 1. Create Virtual Environment
-
-```
+1) Create environment (recommended)
 python -m venv .venv
 source .venv/bin/activate
-```
 
-### 2. Install Dependencies
-
-```
+2) Install dependencies
 pip install -r requirements.txt
-```
 
----
-
-# Problem 1: Word Embeddings (CBOW + Skip-gram)
-
-## Objective
-
+Problem 1: Word Embeddings (CBOW + Skip-gram)
+Objective
 Train and compare Word2Vec models on IIT Jodhpur text after preprocessing.
 
----
+Preprocessing Summary
 
-## Preprocessing Summary
+Lowercasing
+URL/email removal
+Non-alphabetic filtering
+Boilerplate + noise removal
+Tokenization
+Stopword filtering
+Frequency-based cleanup
 
-- Lowercasing  
-- URL/email removal  
-- Non-alphabetic filtering  
-- Boilerplate + noise removal  
-- Tokenization  
-- Stopword filtering  
-- Frequency-based cleanup  
+Corpus Statistics
 
----
+Total tokens: 34,035
+Vocabulary size: 3,967
+Total sentences: 1,702
 
-## Corpus Statistics
-
-- Total tokens: 34,035  
-- Vocabulary size: 3,967  
-- Total sentences: 1,702  
-
----
-
-## Run
-
-```
+Run
 cd word_embeddings
 python src/main.py
-```
 
----
 
-## Outputs
+Main Outputs
+Generated under word_embeddings/results/:
 
-Generated under `word_embeddings/results/`:
+experiment_results.csv
+wordcloud.png
+cbow_pca.png
+skipgram_pca.png
+scratch_cbow_pca.png
+scratch_skipgram_pca.png
 
-- experiment_results.csv  
-- wordcloud.png  
-- cbow_pca.png  
-- skipgram_pca.png  
-- scratch_cbow_pca.png  
-- scratch_skipgram_pca.png  
 
----
+Best Hyperparameter Configuration
 
-## Best Hyperparameter Configuration
+Dimension: 200
+Window: 3
+Negative samples: 5
+CBOW score: 0.9946
+Skip-gram score: 0.9209
 
-- Dimension: 200  
-- Window: 3  
-- Negative samples: 5  
-- CBOW score: 0.9946  
-- Skip-gram score: 0.9209  
+Observations
 
----
+CBOW performs better overall on this corpus size.
+Skip-gram gives more functionally distinct neighborhoods in many cases.
+From-scratch Skip-gram is comparatively strong; from-scratch CBOW is weaker.
 
-## Observations
 
-- CBOW performs better overall on this corpus size  
-- Skip-gram gives more functionally distinct neighborhoods  
-- From-scratch Skip-gram is comparatively strong  
-- From-scratch CBOW is weaker  
 
----
+Problem 2: Character-Level Name Generation
 
-# Problem 2: Character-Level Name Generation
+Objective
+Generate Indian names character-by-character using recurrent models:
 
-## Objective
+Vanilla RNN
+BLSTM
+Attention-style model setup
 
-Generate Indian names character-by-character using:
 
-- Vanilla RNN  
-- BLSTM  
-- Attention-style model setup  
+Dataset
 
----
+Training names: 1000 (LLM-generated)
+File: name_generation/data/TrainingNames.txt
 
-## Dataset
+Common Hyperparameters
 
-- Training names: 1000 (LLM-generated)  
-- File: `name_generation/data/TrainingNames.txt`  
+Embedding size = 32
+Hidden size = 128
+Learning rate = 0.003
+Epochs = 25
 
----
 
-## Common Hyperparameters
-
-- Embedding size = 32  
-- Hidden size = 128  
-- Learning rate = 0.003  
-- Epochs = 25  
-
----
-
-## Run
-
-```
+Run
 cd name_generation
 python -m train.train_rnn
 python -m train.train_blstm
 python -m train.train_attention
-```
 
----
 
-## Quantitative Results
+Quantitative Results
 
-| Model | Trainable Params | Novelty | Diversity |
-|------|----------------|---------|----------|
-| RNN | 24,633 | 0.790 | 0.985 |
-| BLSTM | 175,314 | 0.685 | 0.980 |
-| Attention Run | 175,314 | 0.685 | 0.965 |
+Model	Trainable Params	Novelty	Diversity
+RNN	24,633	0.790	0.985
+BLSTM	175,314	0.685	0.980
+Attention Run	175,314	0.685	0.965
 
----
 
-## Interpretation
 
-- RNN: highest novelty/diversity (more creative outputs)  
-- BLSTM: better structural realism but lower novelty  
-- Attention run: currently close to BLSTM behavior  
+Interpretation
 
----
+RNN: highest novelty/diversity (more creative outputs)
+BLSTM: better structural realism but lower novelty
+Attention run: currently close to BLSTM behavior in reported outputs
 
-## Dependencies
+Dependencies
+From requirements.txt:
 
-- gensim  
-- matplotlib  
-- scikit-learn  
-- wordcloud  
-- pandas  
-- torch  
-- numpy  
-
----
-
-## Notes
-
-- This repository is an academic submission for NLU Assignment 2  
-- Results depend on preprocessing choices, random initialization, and training seed  
+gensim
+matplotlib
+scikit-learn
+wordcloud
+pandas
+torch
+numpy
+Notes
+This repository is an academic submission for NLU Assignment 2.
+Results depend on data cleaning choices, random initialization, and training seed.

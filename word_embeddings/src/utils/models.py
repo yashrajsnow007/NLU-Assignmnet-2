@@ -2,6 +2,7 @@ from gensim.models import Word2Vec
 import pandas as pd
 
 def train_gensim_model(sentences, dim=100, window=5, neg=5, sg=0):
+    # sg=0 for CBOW, sg=1 for Skip-gram
     model = Word2Vec(
         sentences=sentences,
         vector_size=dim,
@@ -15,17 +16,20 @@ def train_gensim_model(sentences, dim=100, window=5, neg=5, sg=0):
     return model
 
 def evaluate_model(model):
+    # Evaluate quality by checking nearest neighbor similarities
     test_words = ["research", "students", "phd", "engineering"]
 
     scores = []
     for word in test_words:
         if word in model.wv:
+            # Get top 5 similar words and average their scores
             sims = model.wv.most_similar(word, topn=5)
             scores.append(sum([s for _, s in sims]) / 5)
 
     return sum(scores)/len(scores) if scores else 0
 
 def run_experiments(sentences):
+    # Hyperparameter grid search: 3 dims × 3 windows × 2 negatives = 18 experiments
     dims = [50, 100, 200]
     windows = [3, 5, 8]
     negatives = [5, 10]
@@ -35,13 +39,15 @@ def run_experiments(sentences):
     for dim in dims:
         for win in windows:
             for neg in negatives:
-
+                # Train both CBOW (sg=0) and Skip-gram (sg=1) models
                 cbow = train_gensim_model(sentences, dim, win, neg, sg=0)
                 sg = train_gensim_model(sentences, dim, win, neg, sg=1)
 
+                # Evaluate both models
                 cbow_score = evaluate_model(cbow)
                 sg_score = evaluate_model(sg)
 
+                # Store results
                 results.append({
                     "dim": dim,
                     "window": win,
@@ -50,14 +56,17 @@ def run_experiments(sentences):
                     "SkipGram": round(sg_score, 4)
                 })
 
+    # Sort by Skip-gram performance
     df = pd.DataFrame(results)
     return df.sort_values(by="SkipGram", ascending=False)
 
 def nearest_neighbors_gensim(model, word):
+    # Find 5 most similar words to the given word
     if word in model.wv:
         return model.wv.most_similar(word, topn=5)
     return []
 
 
 def analogy_gensim(model, a, b, c):
+    # Solve analogy: a:b :: c:? using vector math b-a+c
     return model.wv.most_similar(positive=[b, c], negative=[a], topn=3)
