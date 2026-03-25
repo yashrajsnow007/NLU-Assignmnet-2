@@ -11,11 +11,11 @@ import os
 # Create results directory
 os.makedirs("results", exist_ok=True)
 
-# ========== 1. PREPROCESS ==========
+#  1. PREPROCESS 
 # Clean and prepare raw corpus
 tokens = preprocess()
 
-# ========== 2. WORDCLOUD ==========
+#  2. WORDCLOUD 
 # Load corpus and generate word cloud visualization
 with open("data/corpus.txt", "r", encoding="utf-8") as f:
     text = f.read()
@@ -27,7 +27,7 @@ plt.axis("off")
 plt.savefig("results/wordcloud.png")
 plt.show()
 
-# ========== 3. CREATE SENTENCES ==========
+#  3. CREATE SENTENCES 
 # Split corpus into fixed-size sentences using sliding window
 words = text.split()
 
@@ -39,14 +39,14 @@ for i in range(0, len(words), window_size):
 
 print("Total sentences:", len(sentences))
 
-# ========== 4. HYPERPARAMETER EXPERIMENTS ==========
+#  4. HYPERPARAMETER EXPERIMENTS 
 # Test different embedding configurations (18 total)
 df = run_experiments(sentences)
 print(df)
 
 best = df.iloc[0]  # Get best configuration
 
-# ========== 5. TRAIN FINAL MODELS ==========
+#  5. TRAIN FINAL MODELS 
 # Train Gensim models with best hyperparameters
 cbow_model = train_gensim_model(sentences, int(best["dim"]), int(best["window"]), int(best["negative"]), 0)
 skipgram_model = train_gensim_model(sentences, int(best["dim"]), int(best["window"]), int(best["negative"]), 1)
@@ -57,12 +57,12 @@ df.to_csv("results/experiment_results.csv", index=False)
 print("\n=== FINAL EXPERIMENT TABLE ===")
 print(df.head(10))
 
-# ========== 6. SCRATCH IMPLEMENTATIONS ==========
+#  6. SCRATCH IMPLEMENTATIONS 
 # Train custom implementations of CBOW and Skip-gram
 W_sg, w2i_sg, i2w_sg = train_scratch_skipgram(sentences)
 W_cb, w2i_cb, i2w_cb = train_scratch_cbow(sentences)
 
-# ========== 7. TEST NEAREST NEIGHBORS ==========
+#  7. TEST NEAREST NEIGHBORS 
 # Find similar words for test set
 words = ["research", "students", "phd", "exam"]
 
@@ -82,7 +82,7 @@ print("\n===== SCRATCH CBOW =====")
 for w in words:
     print(w, "->", nearest_neighbors_scratch(W_cb, w, w2i_cb, i2w_cb))
 
-# ========== 8. VISUALIZE EMBEDDINGS ==========
+#  8. VISUALIZE EMBEDDINGS 
 # Generate PCA plots for embedding visualization
 words_to_plot = [
     "research", "publication", "project", "labs",
@@ -105,14 +105,14 @@ plot_scratch(W_sg, w2i_sg, i2w_sg, words_to_plot, "Scratch Skip-gram PCA",
 plot_scratch(W_cb, w2i_cb, i2w_cb, words_to_plot, "Scratch CBOW PCA",
              "results/scratch_cbow_pca.png")
 
-# ========== 9. SAMPLE EMBEDDING ==========
+#  9. SAMPLE EMBEDDING 
 # Display embedding vector for a sample word
 word = "research"
 vector = skipgram_model.wv[word]
 vector_str = ", ".join([str(round(v, 4)) for v in vector])
 print(f"\n{word} embedding: {vector_str}")
 
-# ========== 10. WORD FREQUENCY ANALYSIS ==========
+#  10. WORD FREQUENCY ANALYSIS 
 # Find most common words in corpus
 freq = Counter(tokens)
 top10 = freq.most_common(10)
@@ -125,7 +125,7 @@ for word, count in top10:
 
 print(", ".join(result))
 
-# ========== 11. WORD ANALOGIES - GENSIM SKIP-GRAM ==========
+#  11. WORD ANALOGIES - GENSIM SKIP-GRAM 
 print("\n===== ANALOGIES (GENSIM SKIP-GRAM) =====")
 
 print("UG : BTech :: PG :",
@@ -137,7 +137,7 @@ print("\nresearch : publication :: teaching :",
 print("\nstudent : phd :: undergraduate :",
       analogy_gensim(skipgram_model, "students", "phd", "undergraduate"))
 
-# ========== 12. WORD ANALOGIES - SCRATCH ==========
+#  12. WORD ANALOGIES - SCRATCH 
 print("\n===== ANALOGIES (SCRATCH) =====")
 
 print("UG : BTech :: PG :",
@@ -149,7 +149,7 @@ print("\nresearch : publication :: teaching :",
 print("\nstudent : phd :: undergraduate :",
       analogy_scratch(W_sg, w2i_sg, i2w_sg, "students", "phd", "undergraduate"))
 
-# ========== 13. WORD ANALOGIES - GENSIM CBOW ==========
+#  13. WORD ANALOGIES - GENSIM CBOW 
 print("\n===== ANALOGIES (GENSIM CBOW) =====")
 
 print("UG : BTech :: PG :",
@@ -161,7 +161,7 @@ print("\nresearch : publication :: teaching :",
 print("\nstudent : phd :: undergraduate :",
       analogy_gensim(cbow_model, "students", "phd", "undergraduate"))
 
-# ========== 14. WORD ANALOGIES - SCRATCH CBOW ==========
+#  14. WORD ANALOGIES - SCRATCH CBOW 
 print("\n===== ANALOGIES (SCRATCH CBOW) =====")
 
 print("UG : BTech :: PG :",
