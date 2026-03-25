@@ -27,7 +27,7 @@ def plot_gensim(model, words, title, save_path=None):
 
     plt.show()
 
-def plot_scratch(W, w2i, i2w, words, title, save_path=None)):
+def plot_scratch(W, w2i, i2w, words, title, save_path=None):
 
     vectors = []
     labels = []
