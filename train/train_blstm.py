@@ -84,6 +84,8 @@ def train():
 
         print(f"Epoch {epoch+1}, Loss: {total_loss:.4f}")
 
+    torch.save(model.state_dict(), "train/blstm_model.pth")
+
     print("Trainable Parameters:", count_params(model))
     novelty, diversity, _ = evaluate(
         lambda m: generate(m, stoi, itos, device),

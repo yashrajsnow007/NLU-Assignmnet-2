@@ -79,6 +79,7 @@ def train():
 
         print(f"Epoch {epoch+1}, Loss: {total_loss:.4f}")
 
+    torch.save(model.state_dict(), "train/rnn_model.pth")
     print("Trainable Parameters:", count_params(model))
 
     #  evaluation + saving results

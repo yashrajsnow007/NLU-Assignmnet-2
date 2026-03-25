@@ -7,7 +7,7 @@ from utils.preprocess import load_data, get_loader
 from utils.evaluation import evaluate
 
 
-# 🔹 Hyperparameters
+# Hyperparameters
 EMBED_SIZE = 32
 HIDDEN_SIZE = 128
 LEARNING_RATE = 0.003
@@ -84,6 +84,7 @@ def train():
 
         print(f"Epoch {epoch+1}, Loss: {total_loss:.4f}")
 
+    torch.save(model.state_dict(), "train/attention_model.pth")
     print("Trainable Parameters:", count_params(model))
 
     novelty, diversity, _ = evaluate(
