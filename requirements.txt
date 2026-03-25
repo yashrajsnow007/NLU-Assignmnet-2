@@ -1,0 +1,7 @@
+gensim
+matplotlib
+scikit-learn
+wordcloud
+pandas
+torch
+numpy
