@@ -1,7 +1,7 @@
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-def plot_gensim(model, words, title):
+def plot_gensim(model, words, title, save_path=None):
 
     vectors = []
     labels = []
@@ -21,10 +21,13 @@ def plot_gensim(model, words, title):
         plt.text(x, y, word)
 
     plt.title(title)
+
+    if save_path:
+        plt.savefig(save_path)
+
     plt.show()
 
-
-def plot_scratch(W, w2i, i2w, words, title):
+def plot_scratch(W, w2i, i2w, words, title, save_path=None)):
 
     vectors = []
     labels = []
@@ -48,4 +51,8 @@ def plot_scratch(W, w2i, i2w, words, title):
         plt.text(x, y, word)
 
     plt.title(title)
+    
+    if save_path:
+        plt.savefig(save_path)
+        
     plt.show()

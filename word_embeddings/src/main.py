@@ -6,7 +6,8 @@ from utils.visualization import *
 from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
-
+import os
+os.makedirs("results", exist_ok=True)
 # -------------------------
 # PREPROCESS
 # -------------------------
@@ -22,6 +23,7 @@ wordcloud = WordCloud(width=800, height=400, background_color='white').generate(
 
 plt.imshow(wordcloud)
 plt.axis("off")
+plt.savefig("results/wordcloud.png")
 plt.show()
 
 # -------------------------
@@ -87,11 +89,17 @@ words_to_plot = [
     "course", "program", "degree"
 ]
 
-plot_gensim(skipgram_model, words_to_plot, "Skip-gram PCA")
-plot_gensim(cbow_model, words_to_plot, "CBOW PCA")
+plot_gensim(skipgram_model, words_to_plot, "Skip-gram PCA",
+            "results/skipgram_pca.png")
 
-plot_scratch(W_sg, w2i_sg, i2w_sg, words_to_plot, "Scratch Skip-gram PCA")
-plot_scratch(W_cb, w2i_cb, i2w_cb, words_to_plot, "Scratch CBOW PCA")
+plot_gensim(cbow_model, words_to_plot, "CBOW PCA",
+            "results/cbow_pca.png")
+
+plot_scratch(W_sg, w2i_sg, i2w_sg, words_to_plot, "Scratch Skip-gram PCA",
+             "results/scratch_skipgram_pca.png")
+
+plot_scratch(W_cb, w2i_cb, i2w_cb, words_to_plot, "Scratch CBOW PCA",
+             "results/scratch_cbow_pca.png")
 
 # -------------------------
 # VECTOR PRINT
@@ -114,3 +122,50 @@ for word, count in top10:
     result.append(f"{word}, {count}")
 
 print(", ".join(result))
+
+print("\n===== ANALOGIES (GENSIM SKIP-GRAM) =====")
+
+print("UG : BTech :: PG :",
+      analogy_gensim(skipgram_model, "undergraduate", "btech", "postgraduate"))
+
+print("\nresearch : publication :: teaching :",
+      analogy_gensim(skipgram_model, "research", "publication", "teaching"))
+
+print("\nstudent : phd :: undergraduate :",
+      analogy_gensim(skipgram_model, "students", "phd", "undergraduate"))
+
+
+print("\n===== ANALOGIES (SCRATCH) =====")
+
+print("UG : BTech :: PG :",
+      analogy_scratch(W_sg, w2i_sg, i2w_sg, "undergraduate", "btech", "postgraduate"))
+
+print("\nresearch : publication :: teaching :",
+      analogy_scratch(W_sg, w2i_sg, i2w_sg, "research", "publication", "teaching"))
+
+print("\nstudent : phd :: undergraduate :",
+      analogy_scratch(W_sg, w2i_sg, i2w_sg, "students", "phd", "undergraduate"))
+
+
+print("\n===== ANALOGIES (GENSIM CBOW) =====")
+
+print("UG : BTech :: PG :",
+      analogy_gensim(cbow_model, "undergraduate", "btech", "postgraduate"))
+
+print("\nresearch : publication :: teaching :",
+      analogy_gensim(cbow_model, "research", "publication", "teaching"))
+
+print("\nstudent : phd :: undergraduate :",
+      analogy_gensim(cbow_model, "students", "phd", "undergraduate"))
+
+
+print("\n===== ANALOGIES (SCRATCH CBOW) =====")
+
+print("UG : BTech :: PG :",
+      analogy_scratch(W_cb, w2i_cb, i2w_cb, "undergraduate", "btech", "postgraduate"))
+
+print("\nresearch : publication :: teaching :",
+      analogy_scratch(W_cb, w2i_cb, i2w_cb, "research", "publication", "teaching"))
+
+print("\nstudent : phd :: undergraduate :",
+      analogy_scratch(W_cb, w2i_cb, i2w_cb, "students", "phd", "undergraduate"))
