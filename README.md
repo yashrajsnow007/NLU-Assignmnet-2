@@ -56,7 +56,7 @@ NLU-Assignmnet-2/
 
 ## Setup
 
-### 1. Create Virtual Environment (Recommended)
+### 1. Create Virtual Environment
 
 ```
 python -m venv .venv
