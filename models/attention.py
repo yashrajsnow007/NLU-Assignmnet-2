@@ -1,52 +1,47 @@
-class BLSTM(nn.Module):
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class RNNAttention(nn.Module):
     def __init__(self, vocab_size, embed_size, hidden_size):
         super().__init__()
-        
+
         self.hidden_size = hidden_size
-        
+
         self.embedding = nn.Embedding(vocab_size, embed_size)
-        
-        self.forward_cell = LSTMCell(embed_size, hidden_size)
-        self.backward_cell = LSTMCell(embed_size, hidden_size)
-        
-        # bidirectional output
+
+        self.W_xh = nn.Parameter(torch.randn(embed_size, hidden_size) * 0.01)
+        self.W_hh = nn.Parameter(torch.randn(hidden_size, hidden_size) * 0.01)
+        self.b_h  = nn.Parameter(torch.zeros(hidden_size))
+
         self.fc = nn.Linear(hidden_size * 2, vocab_size)
-        
-        # forward-only output (IMPORTANT)
-        self.fc_forward = nn.Linear(hidden_size, vocab_size)
-    
+
     def forward(self, x):
         B, T = x.shape
         x = self.embedding(x)
-        
-        # forward pass
-        h_f = torch.zeros(B, self.hidden_size).to(x.device)
-        c_f = torch.zeros(B, self.hidden_size).to(x.device)
-        
-        forward_outputs = []
+
+        h = torch.zeros(B, self.hidden_size).to(x.device)
+        hidden_states = []
+
         for t in range(T):
-            h_f, c_f = self.forward_cell(x[:, t, :], h_f, c_f)
-            forward_outputs.append(h_f.unsqueeze(1))
-        
-        forward_outputs = torch.cat(forward_outputs, dim=1)
-        
-        # backward pass
-        h_b = torch.zeros(B, self.hidden_size).to(x.device)
-        c_b = torch.zeros(B, self.hidden_size).to(x.device)
-        
-        backward_outputs = []
-        for t in reversed(range(T)):
-            h_b, c_b = self.backward_cell(x[:, t, :], h_b, c_b)
-            backward_outputs.append(h_b.unsqueeze(1))
-        
-        backward_outputs.reverse()
-        backward_outputs = torch.cat(backward_outputs, dim=1)
-        
-        # BLSTM output
-        outputs = torch.cat([forward_outputs, backward_outputs], dim=2)
-        outputs = self.fc(outputs)
-        
-        # 🔴 forward-only output (THIS FIXES EVERYTHING)
-        forward_logits = self.fc_forward(forward_outputs)
-        
-        return outputs, forward_logits
+            h = torch.tanh(x[:, t, :] @ self.W_xh + h @ self.W_hh + self.b_h)
+            hidden_states.append(h.unsqueeze(1))
+
+        hidden_states = torch.cat(hidden_states, dim=1)
+
+        outputs = []
+
+        for t in range(T):
+            h_t = hidden_states[:, t, :]
+
+            scores = torch.bmm(hidden_states, h_t.unsqueeze(2)).squeeze(2)
+            attn_weights = F.softmax(scores, dim=1)
+
+            context = torch.bmm(attn_weights.unsqueeze(1), hidden_states).squeeze(1)
+
+            combined = torch.cat([h_t, context], dim=1)
+            out = self.fc(combined)
+
+            outputs.append(out.unsqueeze(1))
+
+        return torch.cat(outputs, dim=1)
